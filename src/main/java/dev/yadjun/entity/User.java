@@ -1,27 +1,22 @@
 package dev.yadjun.entity;
 
+import dev.yadjun.enums.UserRole;
 import jakarta.persistence.*;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.Month;
-
 @Entity
+@Table(name = "users")
 @Getter
 @Setter
 @NoArgsConstructor
-@Table(name = "salary_period", uniqueConstraints = @UniqueConstraint(columnNames =
-        {"month","year"}))
-public class SalaryPeriod {
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
-    @Column(nullable = false)
-    private int year;
+    private Long id;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Month month;
-
+    private UserRole userRole;
 }
