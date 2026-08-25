@@ -1,7 +1,8 @@
 package dev.yadjun.repository;
 
+import dev.yadjun.entity.DepartmentPayroll;
 import dev.yadjun.entity.EmployeeAssignment;
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface DepartmentPayrollRepository extends JpaRepository<EmployeeAssignment, Long> {
+public interface DepartmentPayrollRepository extends JpaRepository<DepartmentPayroll, Long> {
 }
