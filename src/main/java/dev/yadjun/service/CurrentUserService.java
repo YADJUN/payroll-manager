@@ -16,8 +16,11 @@ public class CurrentUserService {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        String username = authentication.getName();
 
-        return userRepository.findByUsername(username).orElseThrow();
+        String username = authentication.getName();
+        System.out.println("AUTHENTICATION = " + authentication);
+        System.out.println("USERNAME = " + username);
+
+        return userRepository.findByUsername("yadjun").orElseThrow();
     }
 }

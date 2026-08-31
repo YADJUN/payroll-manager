@@ -1,4 +1,4 @@
-package dev.yadjun.config;
+package dev.yadjun.controller;
 
 import dev.yadjun.dto.UserCreateRequest;
 import dev.yadjun.entity.User;

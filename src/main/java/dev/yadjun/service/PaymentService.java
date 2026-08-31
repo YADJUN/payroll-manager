@@ -1,6 +1,7 @@
 package dev.yadjun.service;
 
 import dev.yadjun.dto.PaymentCreateRequest;
+import dev.yadjun.dto.PaymentResponse;
 import dev.yadjun.entity.CashOperation;
 import dev.yadjun.entity.DepartmentPayroll;
 import dev.yadjun.entity.Employee;
@@ -10,7 +11,6 @@ import dev.yadjun.repository.CashOperationRepository;
 import dev.yadjun.repository.DepartmentPayrollRepository;
 import dev.yadjun.repository.EmployeeRepository;
 import dev.yadjun.repository.PaymentRepository;
-import dev.yadjun.service.security.CurrentUserSecurity;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -28,14 +28,14 @@ public class PaymentService {
     private final CurrentUserService currentUserService;
 
     @Transactional
-    public Payment createPayment (PaymentCreateRequest request) {
-        DepartmentPayroll departmentPayroll = departmentPayrollRepository.findById(request.getDepartmentPayrollId())
-                .orElseThrow();
+    public PaymentResponse createPayment(PaymentCreateRequest request) {
+        LocalDate date = LocalDate.now();
+        DepartmentPayroll departmentPayroll = departmentPayrollRepository.findById(request.getDepartmentPayrollId()).orElseThrow();
         Payment payment = new Payment();
         payment.setDepartmentPayroll(departmentPayroll);
         payment.setAmount(request.getAmount());
         payment.setComment(request.getComment());
-        payment.setDate(LocalDate.now());
+        payment.setDate(date);
         Employee employee = null;
         if (request.getEmployeeId() != null) {
             employee = employeeRepository.findById(request.getEmployeeId()).orElseThrow();
@@ -45,14 +45,24 @@ public class PaymentService {
         CashOperation cashOperation = new CashOperation();
         cashOperation.setAmount(request.getAmount());
         cashOperation.setComment(request.getComment());
-        cashOperation.setDate(LocalDate.now());
+        cashOperation.setDate(date);
         cashOperation.setType(CashOperationType.EXPENSE);
         cashOperation.setPerformedBy(currentUserService.getCurrentUser());
 
         cashOperation = cashOperationRepository.save(cashOperation);
 
         payment.setCashOperation(cashOperation);
-
-        return paymentRepository.save(payment);
+        paymentRepository.save(payment);
+        return new PaymentResponse(
+                payment.getId(),
+                payment.getDepartmentPayroll().getId(),
+                payment.getEmployee() != null
+                        ? payment.getEmployee().getId()
+                        : null,
+                payment.getAmount(),
+                payment.getDate(),
+                payment.getComment(),
+                payment.getCashOperation().getId()
+        );
     }
 }
